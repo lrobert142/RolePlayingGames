@@ -31,6 +31,7 @@ class StarterSite extends TimberSite {
 
 		add_action( 'init', array( $this, 'register_post_types' ) );
 		add_action( 'init', array( $this, 'register_taxonomies' ) );
+		add_action( 'init', array( $this, 'handle_form_submission' ) );
 
 		parent::__construct();
 	}
@@ -55,6 +56,29 @@ class StarterSite extends TimberSite {
 	function add_to_twig( $twig ) {
 		$twig->addExtension( new Twig_Extension_StringLoader() );
 		return $twig;
+	}
+
+	function handle_form_submission() {
+		if (isset($_POST)
+			&& isset($_POST['login_token'])
+			&& isset($_POST['login_token'] != '')
+			&& isset($_POST['username'])
+			&& isset($_POST['password'])
+		):
+			$creds = array(
+				'user_login'    => $_POST['username'],
+				'user_password' => $_POST['password'],
+				'remember'      => true
+			);
+			$user = wp_signon( $creds, true );
+
+			if ( is_wp_error( $user ) ):
+				$GLOBALS['errors']['login_form'] = "Invalid username or password!";
+			else:
+				wp_safe_redirect( home_url() );
+				exit;
+			endif;
+		endif;
 	}
 
 }
