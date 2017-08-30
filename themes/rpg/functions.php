@@ -50,6 +50,8 @@ class StarterSite extends TimberSite {
 		// Setup menus and the site itself
 		$context['menu'] = new TimberMenu();
 		$context['site'] = $this;
+		// Get any errors from the $GLOBALS array for use in Twig
+		$content['errors'] = $GLOBALS['errors'];
 		return $context;
 	}
 
