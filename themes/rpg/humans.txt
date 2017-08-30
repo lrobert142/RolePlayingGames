@@ -1,8 +1,7 @@
 ## Team
 
-Your name or company
-http://yoursite.org
-@you_on_twitter
+Role Playing Grades Team
+Lachlan Robertson, Jacob Jackson, Luke Donnet & Travis Wilson
 
 
 ## Site
