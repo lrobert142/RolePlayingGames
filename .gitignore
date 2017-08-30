@@ -1,4 +1,5 @@
 *.log
+.DS_Store
 wp-config.php
 advanced-cache.php
 backup-db/
