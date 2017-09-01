@@ -75,8 +75,16 @@ class StarterSite extends TimberSite {
 			$user = wp_signon( $creds, true );
 
 			if ( is_wp_error( $user ) ):
-				//TODO Increment number of failed login attempts??? How to track this?!?!
+				$failed_attempts = isset($_COOKIES['failed_login_attempts']) ? intval($_COOKIES['failed_login_attempts']) : 0;
+				$failed_attempts++;
+				setcookie('failed_login_attempts', $failed_attempts, strtotime('+1 hour'));
+
+				if ($failed_attempts >= 3):
+					$GLOBALS['include_captcha'] = true;
+				endif;
+
 				$GLOBALS['errors']['login_form'] = "Invalid username or password!";
+
 			else:
 				wp_safe_redirect( home_url() );
 				exit;
