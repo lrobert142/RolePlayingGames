@@ -60,7 +60,10 @@ class StarterSite extends TimberSite {
 		return $twig;
 	}
 
+	// Function used to handle any generic form submission. Forms are generally
+	// differentiated via an arbitrary 'token'.
 	function handle_form_submission() {
+		// Handle login form
 		if (isset($_POST)
 			&& isset($_POST['login_token'])
 			&& $_POST['login_token'] != ''
@@ -74,11 +77,13 @@ class StarterSite extends TimberSite {
 			);
 			$user = wp_signon( $creds, true );
 
+			// Login failed
 			if ( is_wp_error( $user ) ):
 				$failed_attempts = isset($_COOKIES['failed_login_attempts']) ? intval($_COOKIES['failed_login_attempts']) : 0;
 				$failed_attempts++;
 				setcookie('failed_login_attempts', $failed_attempts, strtotime('+1 hour'));
 
+				// On 3 failure, set var to show captcha
 				if ($failed_attempts >= 3):
 					$GLOBALS['include_captcha'] = true;
 				endif;
