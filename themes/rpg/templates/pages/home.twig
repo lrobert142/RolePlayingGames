@@ -1,7 +1,23 @@
 {% extends 'base.twig' %}
 
 {% block content %}
+
+{% if errors %}
   <p>
-    Sorry, there is no HOME content available...
+    {{ errors.login_form }}
   </p>
+{% endif %}
+
+<form method="POST">
+  <input type="hidden" name="login_token" value="1" placeholder="DO NOT FILL THIS OUT!" />
+  <input type="text" name="username" placeholder="Username" />
+  <input type="password" name="password" placeholder="Password" />
+  <input type="submit" value="Login" />
+  {% if vars.include_captcha %}
+    <p>
+      CAPTCHA PLACEHOLDER
+    </p>
+  {% endif %}
+</form>
+
 {% endblock %}
