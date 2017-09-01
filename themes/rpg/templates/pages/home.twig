@@ -14,7 +14,7 @@
   <input type="password" name="password" placeholder="Password" />
   <input type="submit" value="Login" />
   {% if vars.include_captcha %}
-    <div class="g-recaptcha" data-sitekey="6LfP-y4UAAAAAOTXuF8s2UKzkTD6efOGMa9hUmA-"></div>
+    <div class="g-recaptcha" data-sitekey="{{options.recaptcha_site_key}}"></div>
   {% endif %}
 </form>
 
