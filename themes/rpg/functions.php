@@ -68,42 +68,71 @@ class StarterSite extends TimberSite {
 		// Handle login form
 		if (isset($_POST)
 			&& isset($_POST['login_token'])
-			&& $_POST['login_token'] != ''
 			&& isset($_POST['username'])
 			&& isset($_POST['password'])
 		):
-			$creds = array(
-				'user_login'    => $_POST['username'],
-				'user_password' => $_POST['password'],
-				'remember'      => true
-			);
-			$user = wp_signon( $creds, true );
+			$this->handle_login($_POST);
+		endif;
+	}
 
-			// Login failed
-			if ( is_wp_error( $user ) ):
-				$failed_attempts = isset($_COOKIE['failed_login_attempts']) ? $_COOKIE['failed_login_attempts'] : 0;
-				$failed_attempts = $failed_attempts + 1;
-				setcookie( 'failed_login_attempts', $failed_attempts, strtotime('+1 hour') );
+	// Function used to handle login form submission.
+	function handle_login($login_values) {
+		// If reCAPTCHA was submitted, but isn't valid, set an error and return.
+		if( isset($login_values['g-recaptcha-response']) && !validate_recaptcha($login_values['g-recaptcha-response']) ):
+			$GLOBALS['errors']['login_form'] = "reCAPTCHA not filled out.";
+			$GLOBALS['vars']['include_captcha'] = true;
+			return;
+		endif;
 
-				// On 3 failure, set var to show captcha
-				if ($failed_attempts >= 3):
-					$GLOBALS['vars']['include_captcha'] = true;
-				endif;
+		// Get submitted credentials and attempt to login
+		$creds = array(
+			'user_login'    => $login_values['username'],
+			'user_password' => $login_values['password'],
+			'remember'      => true
+		);
+		$user = wp_signon( $creds, true );
 
-				$GLOBALS['errors']['login_form'] = "Invalid username or password!";
+		// Login failed
+		if ( is_wp_error( $user ) ):
+			$failed_attempts = isset($_COOKIE['failed_login_attempts']) ? $_COOKIE['failed_login_attempts'] : 0;
+			$failed_attempts = $failed_attempts + 1;
+			setcookie( 'failed_login_attempts', $failed_attempts, strtotime('+1 hour') );
 
-			else:
-				// If valid, invalidate cookie and redirect to a new location
-				setcookie( 'failed_login_attempts', 0, time() - (15 * 60) );
-				wp_safe_redirect( home_url() );
-				exit;
+			// On 3 failure, set var to show captcha
+			if ($failed_attempts >= 3):
+				$GLOBALS['vars']['include_captcha'] = true;
 			endif;
+			$GLOBALS['errors']['login_form'] = "Invalid username or password!";
+
+		else:
+			// If valid, invalidate cookie and redirect to a new location
+			setcookie( 'failed_login_attempts', 0, time() - (15 * 60) );
+			wp_safe_redirect( home_url() );
+			exit;
 		endif;
 	}
 
 }
 
 new StarterSite();
+
+// Validate reCAPTCHA
+function validate_recaptcha($recaptcha_response) {
+	$url = 'https://www.google.com/recaptcha/api/siteverify';
+	$post_fields = 'secret=<secret_key>&response=' . $recaptcha_response;
+
+	$ch = curl_init( $url );
+	curl_setopt( $ch, CURLOPT_POST, 1);
+	curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_fields);
+	curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
+	curl_setopt( $ch, CURLOPT_HEADER, 0);
+	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+
+	$response = curl_exec( $ch );
+	curl_close($ch);
+
+	return $response->success;
+}
 
 // Helper method for debugging
 function debug_to_console( $data ) {
