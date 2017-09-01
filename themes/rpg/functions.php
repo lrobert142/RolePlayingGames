@@ -113,8 +113,7 @@ class StarterSite extends TimberSite {
 		else:
 			// If valid, invalidate cookie and redirect to a new location based on user role
 			setcookie( 'failed_login_attempts', 0, time() - (15 * 60) );
-			redirect_to_overview_by_user_role();
-			exit;
+			redirect_to_overview_by_user_role( $user->ID );
 		endif;
 	}
 
@@ -145,11 +144,16 @@ function validate_recaptcha($recaptcha_response) {
 }
 
 // Redirects a user to an overview page based on their user role.
-function redirect_to_overview_by_user_role() {
-	if( in_array('student', wp_get_current_user()->roles) ):
+function redirect_to_overview_by_user_role( $user_id ) {
+	$user_meta = get_userdata($user_id);
+	$user_roles = $user_meta->roles;
+
+	if( in_array('student', $user_roles) == 1 ):
 		wp_safe_redirect( site_url() . '/student-overview' );
+		exit;
 	else:
 		wp_safe_redirect( site_url() . '/teacher-overview' );
+		exit;
 	endif;
 }
 
