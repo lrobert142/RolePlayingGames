@@ -51,7 +51,9 @@ class StarterSite extends TimberSite {
 		$context['menu'] = new TimberMenu();
 		$context['site'] = $this;
 		// Get any errors from the $GLOBALS array for use in Twig
-		$content['errors'] = $GLOBALS['errors'];
+		$context['errors'] = $GLOBALS['errors'];
+		// Include generic vars for use in Twig
+		$context['vars'] = $GLOBALS['vars'];
 		return $context;
 	}
 
@@ -79,13 +81,13 @@ class StarterSite extends TimberSite {
 
 			// Login failed
 			if ( is_wp_error( $user ) ):
-				$failed_attempts = isset($_COOKIES['failed_login_attempts']) ? intval($_COOKIES['failed_login_attempts']) : 0;
-				$failed_attempts++;
+				$failed_attempts = isset($_COOKIE['failed_login_attempts']) ? $_COOKIE['failed_login_attempts'] : 0;
+				$failed_attempts = $failed_attempts + 1;
 				setcookie('failed_login_attempts', $failed_attempts, strtotime('+1 hour'));
 
 				// On 3 failure, set var to show captcha
 				if ($failed_attempts >= 3):
-					$GLOBALS['include_captcha'] = true;
+					$GLOBALS['vars']['include_captcha'] = true;
 				endif;
 
 				$GLOBALS['errors']['login_form'] = "Invalid username or password!";
@@ -100,3 +102,12 @@ class StarterSite extends TimberSite {
 }
 
 new StarterSite();
+
+// Helper method for debugging
+function debug_to_console( $data ) {
+    $output = $data;
+    if ( is_array( $output ) )
+        $output = implode( ',', $output);
+
+    echo "<script>console.log( 'Debug Objects: " . $output . "' );</script>";
+}
