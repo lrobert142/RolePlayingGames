@@ -107,7 +107,7 @@ class StarterSite extends TimberSite {
 		else:
 			// If valid, invalidate cookie and redirect to a new location
 			setcookie( 'failed_login_attempts', 0, time() - (15 * 60) );
-			wp_safe_redirect( home_url() );
+			wp_safe_redirect( site_url() . '/student-overview' );
 			exit;
 		endif;
 	}
