@@ -111,9 +111,9 @@ class StarterSite extends TimberSite {
 			$GLOBALS['errors']['login_form'] = "Invalid username or password!";
 
 		else:
-			// If valid, invalidate cookie and redirect to a new location
+			// If valid, invalidate cookie and redirect to a new location based on user role
 			setcookie( 'failed_login_attempts', 0, time() - (15 * 60) );
-			wp_safe_redirect( site_url() . '/student-overview' );
+			redirect_to_overview_by_user_role();
 			exit;
 		endif;
 	}
@@ -142,6 +142,15 @@ function validate_recaptcha($recaptcha_response) {
 	curl_close($ch);
 
 	return $response->success;
+}
+
+// Redirects a user to an overview page based on their user role.
+function redirect_to_overview_by_user_role() {
+	if( in_array('student', wp_get_current_user()->roles) ):
+		wp_safe_redirect( site_url() . '/student-overview' );
+	else:
+		wp_safe_redirect( site_url() . '/teacher-overview' );
+	endif;
 }
 
 // Display debug items in browser console.
