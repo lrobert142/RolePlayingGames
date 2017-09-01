@@ -63,7 +63,7 @@ class StarterSite extends TimberSite {
 	function handle_form_submission() {
 		if (isset($_POST)
 			&& isset($_POST['login_token'])
-			&& isset($_POST['login_token'] != '')
+			&& $_POST['login_token'] != ''
 			&& isset($_POST['username'])
 			&& isset($_POST['password'])
 		):
@@ -75,6 +75,7 @@ class StarterSite extends TimberSite {
 			$user = wp_signon( $creds, true );
 
 			if ( is_wp_error( $user ) ):
+				//TODO Increment number of failed login attempts??? How to track this?!?!
 				$GLOBALS['errors']['login_form'] = "Invalid username or password!";
 			else:
 				wp_safe_redirect( home_url() );
