@@ -83,7 +83,7 @@ class StarterSite extends TimberSite {
 			if ( is_wp_error( $user ) ):
 				$failed_attempts = isset($_COOKIE['failed_login_attempts']) ? $_COOKIE['failed_login_attempts'] : 0;
 				$failed_attempts = $failed_attempts + 1;
-				setcookie('failed_login_attempts', $failed_attempts, strtotime('+1 hour'));
+				setcookie( 'failed_login_attempts', $failed_attempts, strtotime('+1 hour') );
 
 				// On 3 failure, set var to show captcha
 				if ($failed_attempts >= 3):
@@ -93,6 +93,8 @@ class StarterSite extends TimberSite {
 				$GLOBALS['errors']['login_form'] = "Invalid username or password!";
 
 			else:
+				// If valid, invalidate cookie and redirect to a new location
+				setcookie( 'failed_login_attempts', 0, time() - (15 * 60) );
 				wp_safe_redirect( home_url() );
 				exit;
 			endif;
