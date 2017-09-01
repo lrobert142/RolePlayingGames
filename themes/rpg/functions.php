@@ -45,11 +45,11 @@ class StarterSite extends TimberSite {
 	}
 
 	function add_to_context( $context ) {
-		// Gets the ACF options for use in Twig templates
-		$context['options'] = get_fields('options');
 		// Setup menus and the site itself
 		$context['menu'] = new TimberMenu();
 		$context['site'] = $this;
+		// Gets the ACF options for use in Twig templates
+		$context['options'] = get_fields('options');
 		// Get any errors from the $GLOBALS array for use in Twig
 		$context['errors'] = $GLOBALS['errors'];
 		// Include generic vars for use in Twig
@@ -65,7 +65,7 @@ class StarterSite extends TimberSite {
 	// Function used to handle any generic form submission. Forms are generally
 	// differentiated via an arbitrary 'token'.
 	function handle_form_submission() {
-		// Handle login form
+		// Login form
 		if (isset($_POST)
 			&& isset($_POST['login_token'])
 			&& isset($_POST['username'])
@@ -116,10 +116,14 @@ class StarterSite extends TimberSite {
 
 new StarterSite();
 
+/********************/
+/* HELPER FUNCTIONS */
+/********************/
+
 // Validate reCAPTCHA
 function validate_recaptcha($recaptcha_response) {
 	$url = 'https://www.google.com/recaptcha/api/siteverify';
-	$post_fields = 'secret=<secret_key>&response=' . $recaptcha_response;
+	$post_fields = 'secret=' . get_field('recaptcha_secret_key', 'options') . '&response=' . $recaptcha_response;
 
 	$ch = curl_init( $url );
 	curl_setopt( $ch, CURLOPT_POST, 1);
@@ -134,11 +138,12 @@ function validate_recaptcha($recaptcha_response) {
 	return $response->success;
 }
 
-// Helper method for debugging
+// Display debug items in browser console.
 function debug_to_console( $data ) {
-    $output = $data;
-    if ( is_array( $output ) )
-        $output = implode( ',', $output);
+  $output = $data;
+  if ( is_array( $output ) ):
+  	$output = implode( ',', $output);
+	endif;
 
-    echo "<script>console.log( 'Debug Objects: " . $output . "' );</script>";
+  echo "<script>console.log( 'Debug Objects: " . $output . "' );</script>";
 }
