@@ -29,6 +29,7 @@ class StarterSite extends TimberSite {
 		add_filter( 'timber_context', array( $this, 'add_to_context' ) );
 		add_filter( 'get_twig', array( $this, 'add_to_twig' ) );
 
+		add_action( 'init', array( $this, 'add_roles' ) );
 		add_action( 'init', array( $this, 'register_post_types' ) );
 		add_action( 'init', array( $this, 'register_taxonomies' ) );
 		add_action( 'init', array( $this, 'handle_form_submission' ) );
@@ -42,6 +43,11 @@ class StarterSite extends TimberSite {
 
 	function register_taxonomies() {
 		//this is where you can register custom taxonomies
+	}
+
+	// Add custom user roles here
+	function add_roles() {
+		add_role( 'student', 'Student', array( 'read' => true, 'edit' => false, 'delete' => false, 'level_0' => true ) );
 	}
 
 	function add_to_context( $context ) {
