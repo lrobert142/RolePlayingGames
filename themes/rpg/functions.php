@@ -31,6 +31,7 @@ class StarterSite extends TimberSite {
 
 		add_action( 'init', array( $this, 'register_post_types' ) );
 		add_action( 'init', array( $this, 'register_taxonomies' ) );
+		add_action( 'login_init', array( $this, 'lost_password_redirect' ) );
 
 		parent::__construct();
 	}
@@ -55,6 +56,13 @@ class StarterSite extends TimberSite {
 	function add_to_twig( $twig ) {
 		$twig->addExtension( new Twig_Extension_StringLoader() );
 		return $twig;
+	}
+
+	function lost_password_redirect() {
+    if ( isset($_GET['action']) && is_user_logged_in() && in_array($_GET['action'], array('lostpassword', 'retrievepassword')) ) {
+      wp_safe_redirect( home_url(), 301 );
+      exit;
+    }
 	}
 
 }
