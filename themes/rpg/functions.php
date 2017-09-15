@@ -59,7 +59,7 @@ class StarterSite extends TimberSite {
 	}
 
 	function lost_password_redirect() {
-    if ( isset($_GET['action']) && is_user_logged_in() && in_array($_GET['action'], array('lostpassword', 'retrievepassword')) ) {
+    if ( isset($_GET['action']) && is_user_logged_in() && in_array($_GET['action'], array('lostpassword', 'retrievepassword', 'rp')) ) {
       wp_safe_redirect( home_url(), 301 );
       exit;
     }
