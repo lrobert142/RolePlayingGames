@@ -1,63 +1,48 @@
 /* Login Styles */
-
-//TODO TEMP
-body {
-	background-color: #ededed;
+.login__errors {
+	color: $red;
 }
 
-#JcuLogo {
-	width: 250px;
-	height: 120px;
+.login {
+	max-width: 350px;
+	width: 100%;
+	margin: 0 auto;
+	text-align: center;
+
+	@include breakpoint(max-width 350px) {
+		padding: 0 20px;
+	}
 }
 
-#ContentContainer {
-	max-width: 1920px;
-	width: auto;
-}
-
-#LoginContainer {
-	margin: auto;
-	width: 300px;
-}
-
-.LoginFields {
+.login img {
 	display: block;
-	font-size: 21px;
-	background-color: white;
-	margin-top: 5px;
-	padding-top: -10px;
-	padding-bottom: -10px;
-	border: 2px solid black;
+	margin: 0 auto 20px;
 }
 
-
-#SubmitContainer {
-	margin: auto;
-	width: 300px;
-}
-
-#LoginButton {
-	width: 230px;
-	font-size: 15px;
-	height: 50px;
-	background-color: white;
-	border: 2px solid black;
-}
-
-#InvalidLogin {
-	color: red;
-}
-.SubmitLine{
+.login input {
+	appearance: none;
 	display: block;
+	width: 100%;
+	margin-bottom: 10px;
+	border: 2px solid $black;
+	padding: 5px 10px;
+	background-color: $white;
+	color: $black;
+	font-size: rem(14px);
 }
 
-#ForgotPass {
-	margin-left: 5px;
-	font-size: 17px;
-	text-decoration: none;
-	margin: auto;
+.login input[type=submit]:hover {
+	background-color: $black;
+	color: $white;
 }
 
-#ForgotPass:visited {
-	color: blue;
+.login .g-recaptcha {
+	width: 304px;
+	margin: 0 auto;
+}
+
+.login .forgot-password {
+	display: inline-block;
+	color: $white;
+	text-align: left;
 }
