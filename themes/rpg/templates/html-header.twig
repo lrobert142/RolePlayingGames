@@ -5,7 +5,7 @@
 <!--[if gt IE 8]><!--><html class="no-js" {{ site.language_attributes }}> <!--<![endif]-->
 <head>
     <meta charset="{{ site.charset }}" />
-        <title>   
+        <title>
             {% if wp_title %}
                 {{ wp_title }} - {{ site.name }}
             {% else %}
@@ -23,4 +23,5 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="author" href="{{ site.theme.link }}/humans.txt" />
     <link rel="pingback" href="{{ site.pingback_url }}" />
+    <script src='https://www.google.com/recaptcha/api.js'></script>
     {{function('wp_head')}}

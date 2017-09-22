@@ -1,7 +1,22 @@
 {% extends 'base.twig' %}
 
 {% block content %}
+
+{% if errors %}
   <p>
-    Sorry, there is no HOME content available...
+    {{ errors.login_form }}
   </p>
+{% endif %}
+
+<form method="POST">
+  <input type="hidden" name="login_token" value="1" placeholder="DO NOT FILL THIS OUT!" />
+  <input type="text" name="username" placeholder="Username" required />
+  <input type="password" name="password" placeholder="Password" required />
+  <input type="submit" value="Login" />
+  {% if vars.include_captcha %}
+    <div class="g-recaptcha" data-sitekey="{{options.recaptcha_site_key}}"></div>
+  {% endif %}
+  <a href="#?action=forgotpassword">Forgot Password?</a>
+</form>
+
 {% endblock %}
