@@ -1,13 +1,8 @@
 /* Login Styles */
-.login__errors {
-	color: $red;
-}
-
 .login {
 	max-width: 350px;
 	width: 100%;
 	margin: 0 auto;
-	text-align: center;
 
 	@include breakpoint(max-width 350px) {
 		padding: 0 20px;
@@ -16,7 +11,13 @@
 
 .login img {
 	display: block;
-	margin: 0 auto 20px;
+	margin: 0 auto 10px;
+}
+
+.login__errors {
+	margin-bottom: 20px;
+	color: $red;
+	text-align: left;
 }
 
 .login input {
@@ -38,11 +39,10 @@
 
 .login .g-recaptcha {
 	width: 304px;
-	margin: 0 auto;
+	margin: 0 auto 10px;
 }
 
 .login .forgot-password {
 	display: inline-block;
 	color: $white;
-	text-align: left;
 }
