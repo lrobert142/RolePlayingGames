@@ -1,0 +1,63 @@
+/* Login Styles */
+
+//TODO TEMP
+body {
+	background-color: #ededed;
+}
+
+#JcuLogo {
+	width: 250px;
+	height: 120px;
+}
+
+#ContentContainer {
+	max-width: 1920px;
+	width: auto;
+}
+
+#LoginContainer {
+	margin: auto;
+	width: 300px;
+}
+
+.LoginFields {
+	display: block;
+	font-size: 21px;
+	background-color: white;
+	margin-top: 5px;
+	padding-top: -10px;
+	padding-bottom: -10px;
+	border: 2px solid black;
+}
+
+
+#SubmitContainer {
+	margin: auto;
+	width: 300px;
+}
+
+#LoginButton {
+	width: 230px;
+	font-size: 15px;
+	height: 50px;
+	background-color: white;
+	border: 2px solid black;
+}
+
+#InvalidLogin {
+	color: red;
+}
+.SubmitLine{
+	display: block;
+}
+
+#ForgotPass {
+	margin-left: 5px;
+	font-size: 17px;
+	text-decoration: none;
+	margin: auto;
+}
+
+#ForgotPass:visited {
+	color: blue;
+}
