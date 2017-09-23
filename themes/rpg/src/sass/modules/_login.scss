@@ -1,0 +1,48 @@
+/* Login Styles */
+.login {
+	max-width: 350px;
+	width: 100%;
+	margin: 0 auto;
+
+	@include breakpoint(max-width 350px) {
+		padding: 0 20px;
+	}
+}
+
+.login img {
+	display: block;
+	margin: 0 auto 10px;
+}
+
+.login__errors {
+	margin-bottom: 20px;
+	color: $red;
+	text-align: left;
+}
+
+.login input {
+	appearance: none;
+	display: block;
+	width: 100%;
+	margin-bottom: 10px;
+	border: 2px solid $black;
+	padding: 5px 10px;
+	background-color: $white;
+	color: $black;
+	font-size: rem(14px);
+}
+
+.login input[type=submit]:hover {
+	background-color: $black;
+	color: $white;
+}
+
+.login .g-recaptcha {
+	width: 304px;
+	margin: 0 auto 10px;
+}
+
+.login .forgot-password {
+	display: inline-block;
+	color: $black;
+}

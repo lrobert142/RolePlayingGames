@@ -142,7 +142,7 @@ function validate_recaptcha($recaptcha_response) {
 	$response = curl_exec( $ch );
 	curl_close($ch);
 
-	return $response->success;
+	return json_decode($response)->success;
 }
 
 // Redirects a user to an overview page based on their user role.
