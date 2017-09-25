@@ -1,7 +1,23 @@
 {% extends 'base.twig' %}
 
 {% block content %}
-  <p>
-    Sorry, there is no HOME content available...
-  </p>
+
+<form class="login" method="POST">
+  <img src="{{ site.theme.link }}/dist/img/login.png" />
+  {% if errors %}
+    <p class="login__errors">
+      {{ errors.login_form }}
+    </p>
+  {% endif %}
+
+  <input type="hidden" name="login_token" value="1" placeholder="DO NOT FILL THIS OUT!" />
+  <input type="text" name="username" placeholder="Username" required />
+  <input type="password" name="password" placeholder="Password" required />
+  {% if vars.include_captcha %}
+    <div class="g-recaptcha" data-sitekey="{{options.recaptcha_site_key}}"></div>
+  {% endif %}
+  <input type="submit" value="Login" />
+  <a class="forgot-password" href="#?action=forgotpassword">Forgot Password?</a>
+</form>
+
 {% endblock %}
