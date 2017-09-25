@@ -17,7 +17,7 @@
     <div class="g-recaptcha" data-sitekey="{{options.recaptcha_site_key}}"></div>
   {% endif %}
   <input type="submit" value="Login" />
-  <a class="forgot-password" href="#?action=forgotpassword">Forgot Password?</a>
+  <a href="{{ fn('wp_lostpassword_url', site.url) }}">Forgot Password</a>
 </form>
 
 {% endblock %}
