@@ -6,7 +6,6 @@
 
 {% block content %}
 
-
 <form class="login" method="POST">
   <img src="{{ site.theme.link }}/dist/img/login.png" />
   {% if errors %}
@@ -24,3 +23,5 @@
   <input type="submit" value="Login" />
   <a href="{{ fn('wp_lostpassword_url', site.url) }}">Forgot Password</a>
 </form>
+
+{% endblock %}
