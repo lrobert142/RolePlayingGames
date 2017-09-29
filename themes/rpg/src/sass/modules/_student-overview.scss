@@ -1,0 +1,74 @@
+body {
+    background-color: #085394;
+}
+
+.profile-overview {
+    margin: 20px;
+    border: 1px solid black;
+    padding: 10px;
+    background-color: white;
+}
+
+.profile-overview > h2 {
+    text-align: center;
+}
+
+.profile-overview > img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.profile-overview > h4 {
+    text-align: center;
+}
+
+.subject-overview {
+    margin: 20px;
+    border: 1px solid black;
+    padding: 10px;
+    background-color: white;
+}
+
+.subject-overview > p {
+    border-radius: 50%;
+    background-color: green;
+    border: 1px solid black;
+    width: 50px;
+    height: 50px;
+    font-size: 10px;
+    color: #fff;
+    line-height: 50px;
+    text-align: center;
+}
+
+.quests-overview {
+    margin: 20px;
+    border: 1px solid black;
+    padding: 10px;
+    background-color: white;
+}
+
+.notices-overview {
+    margin: 20px;
+    border: 1px solid black;
+    background-color: red;
+    padding: 10px;
+}
+
+.rewards-overview {
+    margin: 20px;
+    border: 1px solid black;
+    background-color: white;
+    padding: 10px;
+}
+
+.rewards-overview > span, .rewards-overview > p {
+    display: inline-block;
+    text-align: center;
+    padding: 5px;
+}
+
+.checkbox-text {
+    padding-left: 10px;
+}
