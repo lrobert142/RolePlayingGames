@@ -1,7 +1,6 @@
 <?php
 include_once 'acf.php';
 
-
 if( function_exists('acf_add_options_page') ) {
 	acf_add_options_page();
 }
@@ -73,10 +72,14 @@ class StarterSite extends TimberSite {
 	}
 
 	function lost_password_redirect() {
-    if ( isset($_GET['action']) && is_user_logged_in() && in_array($_GET['action'], array('lostpassword', 'retrievepassword', 'rp')) ) {
+    if ( isset($_GET['action'])
+			&& is_user_logged_in()
+			&& in_array($_GET['action'], array('lostpassword', 'retrievepassword', 'rp'))
+		) {
       wp_safe_redirect( home_url(), 301 );
       exit;
     }
+	}
 
 	// Function used to handle any generic form submission. Forms are generally
 	// differentiated via an arbitrary 'token'.
