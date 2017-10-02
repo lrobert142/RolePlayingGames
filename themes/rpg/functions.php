@@ -34,6 +34,7 @@ class StarterSite extends TimberSite {
 		add_action( 'init', array( $this, 'add_roles' ) );
 		add_action( 'init', array( $this, 'register_post_types' ) );
 		add_action( 'init', array( $this, 'register_taxonomies' ) );
+		add_action( 'init', array( $this, 'valid_user_check' ) );
 		add_action( 'init', array( $this, 'handle_form_submission' ) );
 		add_action( 'login_init', array( $this, 'lost_password_redirect' ) );
 
@@ -70,6 +71,40 @@ class StarterSite extends TimberSite {
 		$twig->addExtension( new Twig_Extension_StringLoader() );
 		return $twig;
 	}
+
+	//Check to see if user is logged in when pages other than login are accessed
+    function valid_user_check() {
+
+        $home_page = "/";
+        $current_page = $_SERVER['REQUEST_URI'];
+        $is_home_page = $home_page == $current_page;
+
+        //if true, check if user is on home page
+        if (is_user_logged_in()) {
+
+            $user = wp_get_current_user();
+            $user_id = $user->ID;
+            $user_meta = get_userdata($user_id);
+            $user_roles = $user_meta->roles;
+
+            //redirect to appropriate page
+            if (( in_array('student', $user_roles) == 1 ) && $is_home_page ) {
+                wp_safe_redirect(site_url() . '/student-overview');
+                exit;
+            }
+        }
+
+        //do nothing if user is on home page (login
+        else if (!is_user_logged_in() && $is_home_page) {
+
+        }
+
+        //redirect to homepage
+        else {
+            wp_safe_redirect(home_url(), 301);
+            exit;
+        }
+    }
 
 	// Function used to handle any generic form submission. Forms are generally
 	// differentiated via an arbitrary 'token'.
