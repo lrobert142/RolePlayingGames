@@ -72,40 +72,6 @@ class StarterSite extends TimberSite {
 		return $twig;
 	}
 
-	//Check to see if user is logged in when pages other than login are accessed
-    function valid_user_check() {
-
-        $home_page = "/";
-        $current_page = $_SERVER['REQUEST_URI'];
-        $is_home_page = $home_page == $current_page;
-
-        //if true, check if user is on home page
-        if (is_user_logged_in()) {
-
-            $user = wp_get_current_user();
-            $user_id = $user->ID;
-            $user_meta = get_userdata($user_id);
-            $user_roles = $user_meta->roles;
-
-            //redirect to appropriate page
-            if (( in_array('student', $user_roles) == 1 ) && $is_home_page ) {
-                wp_safe_redirect(site_url() . '/student-overview');
-                exit;
-            }
-        }
-
-        //do nothing if user is on home page (login
-        else if (!is_user_logged_in() && $is_home_page) {
-
-        }
-
-        //redirect to homepage
-        else {
-            wp_safe_redirect(home_url(), 301);
-            exit;
-        }
-    }
-
 	// Function used to handle any generic form submission. Forms are generally
 	// differentiated via an arbitrary 'token'.
 	function handle_form_submission() {
@@ -198,6 +164,9 @@ function redirect_to_overview_by_user_role( $user_id ) {
 	if( in_array('student', $user_roles) == 1 ):
 		wp_safe_redirect( site_url() . '/student-overview' );
 		exit;
+    elseif ( in_array('administrator', $user_roles) == 1):
+        wp_safe_redirect( site_url() . '/wp-admin' );
+        exit;
 	else:
 		wp_safe_redirect( site_url() . '/teacher-overview' );
 		exit;
