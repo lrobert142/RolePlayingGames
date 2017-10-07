@@ -1,7 +1,6 @@
 <?php
 include_once 'acf.php';
 
-
 if( function_exists('acf_add_options_page') ) {
 	acf_add_options_page();
 }
@@ -34,9 +33,8 @@ class StarterSite extends TimberSite {
 		add_action( 'init', array( $this, 'add_roles' ) );
 		add_action( 'init', array( $this, 'register_post_types' ) );
 		add_action( 'init', array( $this, 'register_taxonomies' ) );
-		add_action( 'init', array( $this, 'valid_user_check' ) );
-		add_action( 'init', array( $this, 'handle_form_submission' ) );
-		add_action( 'login_init', array( $this, 'lost_password_redirect' ) );
+        add_action( 'login_init', array( $this, 'lost_password_redirect' ) );
+        add_action( 'init', array( $this, 'handle_form_submission' ) );
 
 		parent::__construct();
 	}
@@ -70,6 +68,16 @@ class StarterSite extends TimberSite {
 	function add_to_twig( $twig ) {
 		$twig->addExtension( new Twig_Extension_StringLoader() );
 		return $twig;
+	}
+
+	function lost_password_redirect() {
+    if ( isset($_GET['action'])
+			&& is_user_logged_in()
+			&& in_array($_GET['action'], array('lostpassword', 'retrievepassword', 'rp'))
+		) {
+      wp_safe_redirect( home_url(), 301 );
+      exit;
+    }
 	}
 
 	// Function used to handle any generic form submission. Forms are generally
@@ -120,16 +128,7 @@ class StarterSite extends TimberSite {
             setcookie('failed_login_attempts', 0, time() - (15 * 60));
             redirect_to_overview_by_user_role($user->ID);
         endif;
-    }
-
-	function lost_password_redirect() {
-    if ( isset($_GET['action']) && is_user_logged_in() && in_array($_GET['action'], array('lostpassword', 'retrievepassword', 'rp')) ) {
-      wp_safe_redirect( home_url(), 301 );
-      exit;
-    }
-
 	}
-
 }
 
 new StarterSite();
