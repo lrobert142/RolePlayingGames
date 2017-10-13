@@ -7,32 +7,29 @@
 <!--<h1>STUDENT OVERVIEW PAGE</h1>-->
     <div class="container">
         <div class="row">
-            
             <div class="col-md-4">
                 <div class="profile-overview">
-	           <h2>[USER NAME]</h2>
+	           <h2>{{name}}</h2>
                 <img src="http://via.placeholder.com/200x250">
-                <h4>Level 18</h4>
+                <h4>Level: {{level_no}}</h4>
                 </div>
             </div>
             
             <div class="col-md-4">
                 <div class="subject-overview">
                     <h2>Subject</h2>
-                    <p>Subject 1</p>
-                    <p>Subject 2</p>
-                    <p>Subject 3</p>
-                    <p>Subject 4</p>
+                    {% for subject in subject_code %}
+                        <p>{{subject}}</p>    
+                    {% endfor %}
                 </div>
             </div>
             
             <div class="col-md-4">
                 <div class="quests-overview">
                     <h2>Quests</h2>
-                    <input type="checkbox"><span class="checkbox-text">Sample quest</span><br>
-                    <input type="checkbox"><span class="checkbox-text">Sample quest</span><br>
-                    <input type="checkbox"><span class="checkbox-text">Sample quest</span><br>
-                    <input type="checkbox"><span class="checkbox-text">Sample quest</span><br>
+                    {% for quest in quest_info %}
+                        <input type="checkbox"><span class="checkbox-text">{{quest}}</span><br>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -42,10 +39,9 @@
             <div class="col-md-4">
                 <div class="notices-overview">
                     <h2>Notices</h2>
-                    <input type="checkbox"><span class="checkbox-text"><strong>URGENT!!!</strong> - Sample quest</span><br>
-                    <input type="checkbox"><span class="checkbox-text">Sample quest</span><br>
-                    <input type="checkbox"><span class="checkbox-text">Sample quest</span><br>
-                    <input type="checkbox"><span class="checkbox-text">Sample quest</span><br>
+                    {% for notice in user_notices %}
+                        <input type="checkbox"><span class="checkbox-text">{{notice}}</span><br>
+                    {% endfor %}
                 </div>
             </div>
             
