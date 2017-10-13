@@ -4,121 +4,161 @@
 Template Name: student-overview
 */
 
+$context = Timber::get_context();
+$post = new TimberPost();
+$context['post'] = $post;
+
 global $wpdb;
-echo "1";
 $current_user = wp_get_current_user();
 $table_name = $wpdb->prefix . "student_information";
+$table_name2 = $wpdb->prefix . "student_information_subjects";
+$table_name3 = $wpdb->prefix . "student_information_quests";
+$table_name4 = $wpdb->prefix . "student_information_notices";
 
 if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name) {
-    echo "3";
-    $result1 = $wpdb->get_results("SELECT ID from wp_student_information");
+    $result1 = $wpdb->get_results("SELECT student_id from wp_student_information");
     foreach ($result1 as $individual_user) {
-        if ($individual_user == $current_user) {
-            fetch_student_data($wpdb, $current_user);
+        if ($individual_user->student_id == $current_user->ID) {
+            $context = fetch_student_data($wpdb, $current_user, $context);
         }
         else {
-            $wpdb->insert($wpdb->student_information, array("Student_ID" => $current_user->ID, "First_Name" => $current_user->first_name, "Last_Name" => $current_user->last_name, "Level_No" => 4), array("%d", "%s", "%s", "%d"));
-            fetch_student_data($wpdb, $current_user);
+            $wpdb->insert($table_name, array("student_id" => $current_user->id, "first_name" => $current_user->first_name, "last_name" => $current_user->last_name, "level_no" => 4), array("%d", "%s", "%s", "%d"));
+            $context = fetch_student_data($wpdb, $current_user, $context);
         }
     }
 }
 else {
-    echo "2";
-    create_student_tables($wpdb, $table_name);
+    create_student_tables($wpdb, $table_name, $table_name2, $table_name3, $table_name4);
+    insert_student_data($wpdb, $current_user, $table_name, $table_name2, $table_name3, $table_name4);
+    $context = fetch_student_data($wpdb, $current_user, $context);
 }
 
-function fetch_student_data($wpdb, $current_user)
-{
-    $subject_array = array();
+Timber::render( array( 'pages/student-overview.twig' ), $context );
 
-    $result = $wpdb->get_results("SELECT ID from wp_student_information");
+function fetch_student_data($wpdb, $current_user, $context)
+{
+    $result = $wpdb->get_results("SELECT * from wp_student_information");
+
+    $user_level_no = null;
 
     foreach ($result as $individual_user) {
-        if ($individual_user == $current_user) {
-            $individual_user = $wpdb->get_results("SELECT * FROM wp_student_information WHERE Student_ID = $current_user->ID");
-            echo $individual_user->First_Name . $result->Last_Name;
-            echo "Level: " . $individual_user->Level_No;
+        if ($individual_user->student_id == $current_user->id) {
+            $context['name'] = $individual_user->first_name . " " . $individual_user->last_name;
+            $context['level_no'] = $individual_user->level_no;
+            $user_level_no = $individual_user->level_no;
         }
     }
+
+    $subject_array = array();
 
     $result2 = $wpdb->get_results("SELECT * FROM wp_student_information_subjects");
     $x = 0;
     foreach ($result2 as $user_subjects) {
-        if ($user_subjects->level_no == $result->Level_No) {
-            echo $user_subjects->Subject_Code;
-            $subject_array[$x] = $user_subjects->Subject_ID;
+        if ($user_subjects->level_no == $user_level_no) {
+            $subject_array[$x] = $user_subjects->subject_code;
             $x++;
         }
     }
 
-    $subject_array_imploded = implode(", ", $subject_array);
+    $context['subject_code'] = $subject_array;
 
-    $result3 = $wpdb->get_results("SELECT * FROM wp_student_information_quests WHERE Student_ID = $current_user->ID");
+    $result3 = $wpdb->get_results("SELECT * FROM wp_student_information_quests WHERE student_id = $current_user->id");
+    $quests_array = array();
+    $y = 0;
     foreach ($result3 as $user_quest) {
-        echo $user_quest->Quest_Info;
+        $quests_array[$y] = $user_quest->quest_info;
+        $y++;
     }
 
-    $result4 = $wpdb->get_results("SELECT * FROM wp_student_information_notices WHERE Subject_ID IN $subject_array_imploded");
+    $context['quest_info'] = $quests_array;
 
+    $subject_array = array_map(function($v) {return "'" . esc_sql($v) . "'";}, $subject_array);
+    $subject_array = implode(',', $subject_array);
+
+    $sql = "SELECT * FROM wp_student_information_notices WHERE subject_id IN (1)";
+
+    $result4 = $wpdb->get_results($sql);
+    $notices_array = array();
+    $z = 0;
     foreach ($result4 as $user_notice) {
-        echo $user_notice->Notice_Info;
+        $notices_array[$z] = $user_notice->notice_info;
+        $z++;
     }
+
+    $context['user_notices'] = $notices_array;
+
+    return $context;
 }
 
-function create_student_tables($wpdb, $table_name)
-{
-    $table_name2 = $wpdb->prefix . "student_information_subjects";
-    $table_name3 = $wpdb->prefix . "student_information_quests";
-    $table_name4 = $wpdb->prefix . "student_information_notices";
+function create_student_tables($wpdb, $table_name, $table_name2, $table_name3, $table_name4) {
 
     $charset_collate = $wpdb->get_charset_collate();
 
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
     $sql_query1 = "CREATE TABLE $table_name (
-        Student_ID int NOT NULL,
-		First_Name varchar(60),
-		Last_Name varchar(60),
-		Level_No int,
-  		PRIMARY KEY (Student_ID)
-		) $charset_collate;
-		
-	CREATE TABLE $table_name2 (
-        Subject_ID int NOT NULL,
-		Subject_Code varchar(10),
-		Subject_Name varchar(60),
-		Level_No int,
-		PRIMARY KEY (Subject_ID),
-		FOREIGN KEY (Level_No) REFERENCES $table_name(Level_No)
-		) $charset_collate;
-		
-	CREATE TABLE $table_name3 (
-  		Quest_ID int NOT NULL,
-		Quest_Info varchar(255),
-		Student_ID int,
-		PRIMARY KEY (Quest_ID),
-		FOREIGN KEY (Student_ID) REFERENCES $table_name(Student_ID)
-		) $charset_collate;
-  		
-	CREATE TABLE $table_name4 (
-  		Notice_ID int NOT NULL,
-		Notice_Info varchar(255),
-		Subject_ID int,
-		PRIMARY KEY (Notice_ID),
-		FOREIGN KEY (Subject_ID) REFERENCES $table_name3(Subject_ID)
+        student_id int NOT NULL,
+		first_name varchar(60),
+		last_name varchar(60),
+		level_no int,
+  		PRIMARY KEY  (student_id)
 		) $charset_collate;";
 
-    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-    dbDelta($sql_query1);
+    $wpdb->query($sql_query1);
+		
+	$sql_query2 = "CREATE TABLE $table_name2 (
+        subject_id int NOT NULL,
+		subject_code varchar(10),
+		subject_name varchar(60),
+		level_no int,
+		PRIMARY KEY  (subject_id)
+		) $charset_collate;";
 
+    $wpdb->query($sql_query2);
+		
+	$sql_query3 = "CREATE TABLE $table_name3 (
+  		quest_id int NOT NULL,
+		quest_info varchar(255),
+		student_id int,
+		PRIMARY KEY  (quest_id),
+		FOREIGN KEY (student_id) REFERENCES $table_name(student_id)
+		) $charset_collate;";
 
-    echo "this is successful";
+    $wpdb->query($sql_query3);
+  		
+	$sql_query4 = "CREATE TABLE $table_name4 (
+  		notice_id int NOT NULL,
+		notice_info varchar(255),
+		subject_id int,
+		PRIMARY KEY  (notice_id)
+		) $charset_collate;";
 
-    //insert_student_data($wpdb, $current_user);
+    $wpdb->query($sql_query4);
 }
 
-function insert_student_data($wpdb, $current_user) {
-    $wpdb->insert($wpdb->student_information, array("Student_ID" => $current_user->ID, "First_Name" => $current_user->first_name, "Last_Name" => $current_user->last_name, "Level_No" => 4), array("%d", "%s", "%s", "%d"));
-    $wpdb->insert($wpdb->student_information_subjects, array("Subject_ID" => 1, "Subject_Code" => "CP1401", "Subject_Name" => "Introduction to Programming", "Level_No" => 1), array("%d", "%s", "%s", "%d"));
-    $wpdb->insert($wpdb->student_information_quests, array("Quest_ID" => 1, "Quest_Info" => "Complete CP1401 Practical 3", "Student_ID" => $current_user->ID), array("%d", "%s", "%d"));
-    $wpdb->insert($wpdb->student_information_quests, array("Notice_ID" => 1, "Notice_Info" => "Assignment is due next week.", "Subject_ID" => 1), array("%d", "%s", "%d"));
+function insert_student_data($wpdb, $current_user, $table_name, $table_name2, $table_name3, $table_name4) {
+    //users
+    $wpdb->insert($table_name, array('student_id' => $current_user->ID, 'first_name' => $current_user->first_name, 'last_name' => $current_user->last_name, 'level_no' => 4), array("%d", "%s", "%s", "%d"));
+
+    //subjects
+    $wpdb->insert($table_name2, array('subject_id' => 1, 'subject_code' => "CP1401", 'subject_name' => "Introduction to Programming", 'level_no' => 4), array("%d", "%s", "%s", "%d"));
+    $wpdb->insert($table_name2, array('subject_id' => 2, 'subject_code' => "CP2404", 'subject_name' => "Introduction to Databases", 'level_no' => 4 ), array('%d', '%s', '%s', '%d'));
+    $wpdb->insert($table_name2, array('subject_id' => 3, 'subject_code' => "CP3401", 'subject_name' => "Mobile Design", 'level_no' => 4 ), array('%d', '%s', '%s', '%d'));
+    $wpdb->insert($table_name2, array('subject_id' => 4, 'subject_code' => "CP1403", 'subject_name' => "Web Design", 'level_no' => 3 ), array('%d', '%s', '%s', '%d'));
+    $wpdb->insert($table_name2, array('subject_id' => 5, 'subject_code' => "CP3407", 'subject_name' => "Programming Advanced II", 'level_no' => 3 ), array('%d', '%s', '%s', '%d'));
+
+    //quests
+    $wpdb->insert($table_name3, array('quest_id' => 1, 'quest_info' => "Complete CP1401 Practical 3", 'student_id' => $current_user->id), array("%d", "%s", "%d"));
+    $wpdb->insert($table_name3, array('quest_id' => 2, 'quest_info' => "Complete CP2404 Mini Test 4", 'student_id' => $current_user->id), array('%d', '%s', '%d'));
+    $wpdb->insert($table_name3, array('quest_id' => 3, 'quest_info' => "Complete CP1401 Practical 4", 'student_id' => $current_user->id), array('%d', '%s', '%d'));
+    $wpdb->insert($table_name3, array('quest_id' => 4, 'quest_info' => "Complete CP1403 Mini Test 2", 'student_id' => 5), array('%d', '%s', '%d'));
+    $wpdb->insert($table_name3, array('quest_id' => 5, 'quest_info' => "Complete CP3407 Practical 1", 'student_id' => 5), array('%d', '%s', '%d'));
+
+    //notices
+    $wpdb->insert($table_name4, array('notice_id' => 1, 'notice_info' => "Assignment is due next week.", 'subject_id' => 1), array("%d", "%s", "%d"));
+    $wpdb->insert($table_name4, array('notice_id' => 2, 'notice_info' => "Lecture time has been changed", 'subject_id' => 2), array('%d', '%s', '%d'));
+    $wpdb->insert($table_name4, array('notice_id' => 3, 'notice_info' => "Practical has been cancelled", 'subject_id' => 3), array('%d', '%s', '%d'));
+    $wpdb->insert($table_name4, array('notice_id' => 4, 'notice_info' => "Substitute tutor announced for lecture", 'subject_id' => 4), array('%d', '%s', '%d'));
+    $wpdb->insert($table_name4, array('notice_id' => 5, 'notice_info' => "Assignment due date delayed", 'subject_id' => 5), array('%d', '%s', '%d'));
 }
 ?>
