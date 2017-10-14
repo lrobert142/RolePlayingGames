@@ -35,6 +35,7 @@ class StarterSite extends TimberSite {
 		add_action( 'init', array( $this, 'register_taxonomies' ) );
         add_action( 'login_init', array( $this, 'lost_password_redirect' ) );
         add_action( 'init', array( $this, 'handle_form_submission' ) );
+        add_action( 'init', array( $this, 'redirect_login') );
 
 		parent::__construct();
 	}
@@ -69,6 +70,16 @@ class StarterSite extends TimberSite {
 		$twig->addExtension( new Twig_Extension_StringLoader() );
 		return $twig;
 	}
+
+	//when logging out, redirect to custom login page rather than wp-login.php
+    function redirect_login() {
+        $page_viewed = basename($_SERVER['REQUEST_URI']);
+
+        if( $page_viewed == "wp-login.php?loggedout=true") {
+            wp_redirect( home_url(), 301);
+            exit;
+        }
+    }
 
 	function lost_password_redirect() {
     if ( isset($_GET['action'])
