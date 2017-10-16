@@ -33,9 +33,9 @@ class StarterSite extends TimberSite {
 		add_action( 'init', array( $this, 'add_roles' ) );
 		add_action( 'init', array( $this, 'register_post_types' ) );
 		add_action( 'init', array( $this, 'register_taxonomies' ) );
-    add_action( 'login_init', array( $this, 'lost_password_redirect' ) );
-    add_action( 'init', array( $this, 'handle_form_submission' ) );
-
+        add_action( 'login_init', array( $this, 'lost_password_redirect' ) );
+        add_action( 'init', array( $this, 'handle_form_submission' ) );
+        add_action( 'init', array( $this, 'redirect_login') );
 
 		parent::__construct();
 	}
@@ -71,6 +71,16 @@ class StarterSite extends TimberSite {
 		return $twig;
 	}
 
+	//when logging out, redirect to custom login page rather than wp-login.php
+    function redirect_login() {
+        $page_viewed = basename($_SERVER['REQUEST_URI']);
+
+        if( $page_viewed == "wp-login.php?loggedout=true") {
+            wp_redirect( home_url(), 301);
+            exit;
+        }
+    }
+
 	function lost_password_redirect() {
     if ( isset($_GET['action'])
 			&& is_user_logged_in()
@@ -95,41 +105,41 @@ class StarterSite extends TimberSite {
 	}
 
 	// Function used to handle login form submission.
-	function handle_login($login_values) {
-		// If reCAPTCHA was submitted, but isn't valid, set an error and return.
-		if( isset($login_values['g-recaptcha-response']) && !validate_recaptcha($login_values['g-recaptcha-response']) ):
-			$GLOBALS['errors']['login_form'] = "reCAPTCHA not filled out.";
-			$GLOBALS['vars']['include_captcha'] = true;
-			return;
-		endif;
+	function handle_login($login_values)
+    {
+        // If reCAPTCHA was submitted, but isn't valid, set an error and return.
+        if (isset($login_values['g-recaptcha-response']) && !validate_recaptcha($login_values['g-recaptcha-response'])):
+            $GLOBALS['errors']['login_form'] = "reCAPTCHA not filled out.";
+            $GLOBALS['vars']['include_captcha'] = true;
+            return;
+        endif;
 
-		// Get submitted credentials and attempt to login
-		$creds = array(
-			'user_login'    => $login_values['username'],
-			'user_password' => $login_values['password'],
-			'remember'      => true
-		);
-		$user = wp_signon( $creds, true );
+        // Get submitted credentials and attempt to login
+        $creds = array(
+            'user_login' => $login_values['username'],
+            'user_password' => $login_values['password'],
+            'remember' => true
+        );
+        $user = wp_signon($creds, true);
 
-		// Login failed
-		if ( is_wp_error( $user ) ):
-			$failed_attempts = isset($_COOKIE['failed_login_attempts']) ? $_COOKIE['failed_login_attempts'] : 0;
-			$failed_attempts = $failed_attempts + 1;
-			setcookie( 'failed_login_attempts', $failed_attempts, strtotime('+1 hour') );
+        // Login failed
+        if (is_wp_error($user)):
+            $failed_attempts = isset($_COOKIE['failed_login_attempts']) ? $_COOKIE['failed_login_attempts'] : 0;
+            $failed_attempts = $failed_attempts + 1;
+            setcookie('failed_login_attempts', $failed_attempts, strtotime('+1 hour'));
 
-			// On 3 failure, set var to show captcha
-			if ($failed_attempts >= 3):
-				$GLOBALS['vars']['include_captcha'] = true;
-			endif;
-			$GLOBALS['errors']['login_form'] = "Invalid username or password!";
+            // On 3 failure, set var to show captcha
+            if ($failed_attempts >= 3):
+                $GLOBALS['vars']['include_captcha'] = true;
+            endif;
+            $GLOBALS['errors']['login_form'] = "Invalid username or password!";
 
-		else:
-			// If valid, invalidate cookie and redirect to a new location based on user role
-			setcookie( 'failed_login_attempts', 0, time() - (15 * 60) );
-			redirect_to_overview_by_user_role( $user->ID );
-		endif;
+        else:
+            // If valid, invalidate cookie and redirect to a new location based on user role
+            setcookie('failed_login_attempts', 0, time() - (15 * 60));
+            redirect_to_overview_by_user_role($user->ID);
+        endif;
 	}
-
 }
 
 new StarterSite();
@@ -164,6 +174,9 @@ function redirect_to_overview_by_user_role( $user_id ) {
 	if( in_array('student', $user_roles) == 1 ):
 		wp_safe_redirect( site_url() . '/student-overview' );
 		exit;
+    elseif ( in_array('administrator', $user_roles) == 1):
+        wp_safe_redirect( site_url() . '/wp-admin' );
+        exit;
 	else:
 		wp_safe_redirect( site_url() . '/teacher-overview' );
 		exit;
