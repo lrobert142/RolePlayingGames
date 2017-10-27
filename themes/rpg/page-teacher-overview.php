@@ -189,7 +189,7 @@ if (is_user_logged_in()) {
         $context = fetch_student_data($wpdb, $current_user, $context);
     }
 
-    $args = array('author' => $current_user->ID, 'post-type' => 'subjects', 'posts_per_page' => -1, 'meta_query' => -1);
+    $args = array('author' => $current_user->ID, 'post_type' => 'teacher_subjects', 'posts_per_page' => -1, 'meta_query' => -1);
     $context["subjects"] = Timber::get_posts($args);
 
     Timber::render(array('pages/teacher-overview.twig'), $context);
