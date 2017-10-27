@@ -1,0 +1,65 @@
+{% extends "base.twig" %}
+
+{% block content %}
+<h1 class="student-overview-title">Teacher Overview</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="profile-overview">
+                <h2>{{ name }}</h2>
+                <img src="http://via.placeholder.com/200x250">
+                <h4>Level: {{ level_no }}</h4>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="subject-overview">
+                {% if subjects|length > 0 %}
+                    <h2>Subject</h2>
+                    {% for subject in subjects %}
+                        <p>{{ subject }}</p>
+                    {% endfor %}
+                {% else %}
+                    <div>You have no subjects</div>
+                {% endif %}
+
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="quests-overview">
+                <h2>Quests</h2>
+                {% for quest in quest_info %}
+                    <input type="checkbox"><span class="checkbox-text">{{ quest }}</span><br>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="notices-overview">
+                <h2>Notices</h2>
+                {% for notice in user_notices %}
+                    <input type="checkbox"><span class="checkbox-text">{{ notice }}</span><br>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="rewards-overview">
+                <h2>Rewards</h2>
+                <span class="glyphicon glyphicon-gift"></span>
+                <p>Unlock Crate <span class="badge">1</span></p>
+                <span class="glyphicon glyphicon-certificate"></span>
+                <p>Badge Progress</p>
+                <span class="glyphicon glyphicon-plus"></span>
+                <p>Unlocked Items <span class="badge">1</span></p>
+                <span class="glyphicon glyphicon-lock"></span>
+                <p>Locked Items</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

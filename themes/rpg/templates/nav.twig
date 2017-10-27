@@ -1,0 +1,25 @@
+{# Nav Template #}
+
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand pull-left" href="#"><img src="{{site.url}}/wp-content/bootstrap-solid.svg" width="30" height="30" alt=""></a>
+            
+        </div>
+        
+        <ul class="nav navbar-nav navbar-right">
+            <li class="nav-item">
+                <a class="nav-link" href="#"><span class="glyphicon glyphicon-home"></span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#"><span class="glyphicon glyphicon-cog"></span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#"><span class="glyphicon glyphicon-user"></span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ function('wp_logout_url') }}"><span class="glyphicon glyphicon-log-out"></span></a>
+            </li>
+        </ul>
+    </div>
+</nav>
