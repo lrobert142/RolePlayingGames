@@ -1,7 +1,7 @@
 <?php
 
 /*
-Template Name: student-overview
+Template Name: teacher-overview
 */
 
 if (is_user_logged_in()) {
@@ -189,7 +189,10 @@ if (is_user_logged_in()) {
         $context = fetch_student_data($wpdb, $current_user, $context);
     }
 
-    Timber::render(array('pages/student-overview.twig'), $context);
+    $args = array('author' => $current_user->ID, 'post-type' => 'subjects', 'posts_per_page' => -1, 'meta_query' => -1);
+    $context["subjects"] = Timber::get_posts($args);
+
+    Timber::render(array('pages/teacher-overview.twig'), $context);
 } else {
     wp_safe_redirect(site_url());
     exit;
